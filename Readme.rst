@@ -9,17 +9,27 @@ NOTE 1: The second Readme2.rst describes additional details and features.
 
 NOTE 2: Also the configuration file and the source code offer a wealth of documentation.
 
+**Release notes**
+-----------------
+10.1.2  First release
+
+10.1.3  Added missing randomlist directory with pictures
+
+10.1.4  HTML closing tag correction in modal page
+
+10.1.5  Added time limit to solve Kaptsja within a defined time (in seconds). Deleted some left "debug" print statements.
+
 **Quick Installation of Kaptsja**
 ---------------------------------
-Important: use --target or -t to specify your desired location 
+Important: use **--target** or **-t** to specify your desired location 
 
-pip install --target=<your_directory> Kaptsja
+**pip install --target=<your_directory> Kaptsja**
 
-pip install -t <your_directory> Kaptsja
+**pip install -t <your_directory> Kaptsja**
 
-Examples: pip install -t \temp\Kaptsja  Kaptsja
+Example: pip install -t \temp\Kaptsja  Kaptsja
 
-Examples: pip install -t /home/Kaptsja  Kaptsja
+Example: pip install -t /home/Kaptsja  Kaptsja
 
 Features and Functions 
 ----------------------
@@ -50,11 +60,12 @@ Summarized functionality / process overview
 * The online user is prompted with a picture with randomly positioned circles with characters (default uppercase letters and digits).
 * The user should click in the Right Sorting Order in each circle according to a generated instruction text inside the picture.
 * When correctly sorted, the user will pass the captcha check else a failure page will be shown.
+* For dynamically generated Kaptsja's a maximum number of seconds to solve the "puzzle" is set. This avoids resending values of a solved Kaptsja after the defind time.
 * Before submitting the result, the user may Retry (means correcting a wrong sorting order) till the configurable number of retries has been exceeded. 
 * The font type and size for characters and instruction text are configurable.
 * The number of circles and the characters to use are both configurable, as well as the transparency percentage of the circle and character.
 * Automatically the instruction text positioning adapts to picture size, the size of the text and used fonts. More/less words, more lines or line breaks, other font types and font points are all leading to a different instruction text size, as well as different sized circles with a character: Kaptsja takes care of that all.
-* The diameters of the Circles are randomly generated. Positioning of circles in the picture will automatically adapt to changes in the size of the instruction text.
+* The diameters of the circles are randomly generated. Positioning of circles in the picture will automatically adapt to changes in the size of the instruction text.
 * A single picture or a subdirectory with a number of pictures (randomly picked) can be provided to serve as background for the captcha. A copyright notice text can optionally be put on the picture at the left/right upper corner. Copyright text, the color and text size can be configured 
 * A full set of nice example pictures is provided for random display. The default files: Kaptsja_bg.jpg and Kaptsja.ico can be (re-)generated at will. 
 * Automatically too large background pictures will be resized for their width: the height will resize proprotionally (resizing happens and is needed only once). 
