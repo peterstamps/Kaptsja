@@ -12,9 +12,10 @@ Important steps to start with!
     When PermissionErrors like below occur during start of uwsgi, the command above hasn't been executed (poperly). 
     PermissionError: [Errno 13] Permission denied: '/var/www/Kaptsja/log/Kaptsja.log'
 
- * Create this directory AND it sub directories if it doesn't exist: 
+ * Create the directory AND it sub directories where the socket is located if they don't exist else bind() error will appear: 
  
-    *  **sudo mkdir /run/uwsgi/app/bottle/socket**
+	It is only needed when you used for example /run/uwsgi/app/bottle/socket as your socket file!
+ 
     *  **sudo mkdir /run/uwsgi**
     *  **sudo mkdir /run/uwsgi/app/**
     *  **sudo mkdir /run/uwsgi/app/bottle**
@@ -100,7 +101,7 @@ Content of /etc/nginx/sites-available/Kaptsja.conf
     }
     upstream _bottle {
     # this path must be exactly the same as used in Kaptsja.ini file for uwsgi!
-    server unix:/run/uwsgi/app/bottle/socket;
+    server unix:/run/bottle_socket;
     }
 
 
@@ -131,7 +132,7 @@ Content of /etc/uwsgi/apps-available/Kaptsja.ini
 ::
 
     [uwsgi]
-    socket = /run/uwsgi/app/bottle/socket
+    socket = /run/bottle_socket
     chdir = /var/www/Kaptsja
     master = true
     plugins-dir = /usr/lib/uwsgi/plugins
@@ -151,7 +152,7 @@ Content of /etc/uwsgi/apps-available/Kaptsja.ini
 ::
 
     [uwsgi]
-    socket = /run/uwsgi/app/bottle/socket
+    socket = /run/bottle_socket
     chdir = /var/www/Kaptsja
     master = true
     binary-path = /home/<USER>/.pyenv/shims/uwsgi
@@ -176,7 +177,7 @@ Content of /etc/uwsgi/apps-available/Kaptsja.ini
 
 **Explanation, some extra settings are provided and can be useful**
 
- - socket:    keep it as defined /run/uwsgi/app/bottle/socket 
+ - socket:    keep it as defined /run/bottle_socket 
  - chdir:    put here the directory in which Kaptsja has been placed
  - master:         keep value true
  - binary-path: the uWSGI executable to use. Remove if you didn’t install the (optional) uwsgi package in your virtual environment.
@@ -194,7 +195,7 @@ Content of /etc/uwsgi/apps-available/Kaptsja.ini
  - pythonpath:  This path will be Added to the pythonpath of the used environment.
                 Example: pythonpath = /var/www/Kaptsja/scripts                
  - vacuum:      Defaults to true. vacuum = false means that uwsgi will not try to  remove all of the generated file/sockets.
-                The /run/uwsgi/app/bottle/socket and its directory bottle will not be deleted else you need to recreate and set ownership to www-data for user and group on the (sub-directory /run/uwsgi/app/bottle when you had switched to another uwsgi binary command. 
+                The /run/bottle_socket (and whend defined its sub-directories) will not be deleted else you need to recreate and set ownership to www-data for user and group on the directory and its sub-directories where the socket file is located when you switched to another uwsgi binary command. 
  - chown-socket:   Keep: www-data. The user (owner) identifier of uWSGI Unix socket
  - chmod-socket:   Keep 660. Set mode of created UNIX socket
  - log-date:       Keep true. Places timestamps into log
@@ -283,7 +284,16 @@ Example, when run from <user>'s home directory:
     
 **uwsgi: bind(): No such file or directory [core/socket.c line 230]**
 
- This error appears when:
+ This error appears when the socket path is defined while the directories/sub-directories don't exist anymore: 
+ 
+	It is only needed when you used for example /run/uwsgi/app/bottle/socket as your socket file! Path /run/bottle_socket is a safer choice as /run directory will probably default exist on Ubuntu.
+ 
+    *  **sudo mkdir /run/uwsgi**
+    *  **sudo mkdir /run/uwsgi/app/**
+    *  **sudo mkdir /run/uwsgi/app/bottle**
+    *  **sudo chown -R www-data:www-data /run/uwsgi**
+
+:
  *  /run/uwsgi directory and/or its sub-dorectories do not exist anymore. uwsgi might have removed them, see below.
 
 **Listing Example part 1**
