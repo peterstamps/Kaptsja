@@ -19,6 +19,9 @@ NOTE 2: Also the configuration file and the source code offer a wealth of docume
 
 10.1.5  Added time limit to solve Kaptsja within a defined time (in seconds). Deleted some left "debug" print statements.
 
+10.1.6  Correction of wrong rotation angle test. The value was always set to 30. Now rotation range 0 - 360 is possible as intended.  Bottle debug and reloader set to False, to prevent double generation of HTML pages (no functional change however). How to run on Android has been added.
+
+
 **Quick Installation of Kaptsja**
 ---------------------------------
 Important: use **--target** or **-t** to specify your desired location 
@@ -53,6 +56,8 @@ For models 2 and 3 the user is asked to check a box labeled "I am not a Robot"
 * Support instructions and examples for usage in combination with Nginx web server are provided.
 
 * It has been tested on Windows and Ubuntu 20.04 Linux with Python 3.7.4 and 3.8.5. Other versions might work as well.
+
+* It has also been tested for fun on Android (v8.0.0) using Pydroid 3 App (v4.01) with the Pydroid Repository Plugin. See below "How to run Kaptsja on Android". 
 
 
 Summarized functionality / process overview 
@@ -261,16 +266,47 @@ Enter command: *python ./scripts/KaptsjaPictureIco.py* and the picture and ico w
 Put any picture to be used as Kaptsja background in /Kaptsja/media  or in /Kaptsja/media/randomlist.
 
 
-*More details are documented in ./docs/Readme2.rst* 
----------------------------------------------------
+**How to run Kaptsja on Android** 
+---------------------------------
+For fun Kaptsja has also been tested on Android (v8.0.0) using Pydroid 3 App (v4.01) with the Pydroid Repository Plugin. Here is how to do it.
+
+- Install Pydroid 3 and Pydroid Repository plugin Apps (the free versions will be okay).
+ 
+- Remember to run both Pydroid 3 and your mobile web browser in a **split screen** else Pydroid will close the session.
+
+- This is due to a bug in Pydroid and it needs to be restarted to continue. 
+
+- You need to install a font as well. Download the desired font file and when compressed (.zip format) unzip the file. 
+
+- Free fonts can be downloaded here https://fonts.google.com/ e.g. https://fonts.google.com/specimen/Ubuntu. Ubuntu-Bold.ttf is a good choice.
+
+- A good place to put the font file in (e.g. Ubuntu-Bold.ttf), is in home Kaptsja folder. Do not forget to adapt the two font paths in KaptsjaConfiguration.py. 
+
+- Use a text editor App like QuickEdit (any will do) to change the settings. 
+
+- Always install Kaptsja via the Pydroid Terminal option (from Menu). First change to your desired folder location and run there following command "pip install -t . Kaptsja". 
+
+- Install the dependencies as listed above. Here you can either use the Pydroid pip menu or simply run in the Pydroid Terminal "pip install bottle Pillow pycryptodome BeautifulSoup4".
+
+- The whole Kaptsja folder structure as listed above will be installed as subdirectory at your desired location. 
+
+- Run Kaptsja via the Pydroid Terminal option. Start the command in the new Kaptsja home folder! Run command "python ./scripts/KaptsjaSite.py". 
+
+- Open a mobile browser in split screen and enter url: "http://localhost:8080/".
+
+- Enjoy solving Kaptsja's!
+
+
+**More details are documented in ./docs/Readme2.rst** 
+-----------------------------------------------------
 For more installation and configuration details look into Readme2.rst file.
 It is located at "/Kaptsja/docs/Readme2.rst".
 For installation with Ningx and uwsgi refer to "/Kaptsja/docs/Installation of Kaptsja with Nginx and uwsgi.rst".
 Note that a combination of various Python versions in a Python virtual environment setup and / or with native Python installtions on Linux can cause quite some headaches; especially when settings and binaries are mixed! Double check!
 
 
-*A Multipurpose AES 256 bits Encryption and Decription module is included*
---------------------------------------------------------------------------
+**A Multipurpose AES 256 bits Encryption and Decription module is included**
+----------------------------------------------------------------------------
 Module KaptsjaEncDec.py contains an advanced encyptions/decryption
 
 In the Kaptsja HTML page it encrypts/decrypts the controlvalue send to and returned from the browser.
@@ -279,8 +315,8 @@ This encryption/ decryption module can be used universally in many projects!
 
 
 
-*Note: a fix when using pycrypto in stead of pycryptodome*
-----------------------------------------------------------
+**Note: a fix when using pycrypto in stead of pycryptodome**
+------------------------------------------------------------
 The suggestion is to use pycryptodome, but when not possible pycrypto can be used as well, taking into account next remarks.
 ::
 
