@@ -1,1 +1,4 @@
-This Line can be deleted
+This Line can be deleted2020-12-12 19:26:59 ERROR    
+Running the bottle Web server failed. Is there a Python error message? Check that first then all start up setttings. Is sitehost correct (name or IP address)?
+Python error message is:
+'max_time_to_solve'

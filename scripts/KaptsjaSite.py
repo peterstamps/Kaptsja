@@ -96,7 +96,6 @@ def send_html_from_html_dir(filename):
 # return requested png image file from work_dir when the request url starts with work_url  
 @app.route(work_url + '<filename:re:.*\.png>')
 def send_image_from_work_dir(filename):
-    print("send_image_from_work_dir", filename)
     return static_file(filename, root=work_dir, mimetype='image/png')
 
 # return requested css file from work_dir when the request url starts with work_url      
@@ -173,7 +172,6 @@ def send_static_modal_page(filename=gen_modal_page_file):
         retcode, gen_modal_page_file = Captgen.create_captcha(mode=modal_page_url)
     else:
         retcode, gen_modal_page_file = Captgen.get_captcha(mode=modal_page_url)
-    print("modal_page_url=", modal_page_url, "gen_modal_page_file=" , gen_modal_page_file) 
     if retcode > 0:
         return "<p>An error has occured. Check the log file.</p>"
     response.set_header("Cache-Control", "no-cache")
@@ -193,7 +191,6 @@ def send_static_modal_captcha_page(filename=gen_captcha_page_file):
         retcode, gen_captcha_page_file = Captgen.create_captcha(mode=modal_captcha_page_url)
     else:
         retcode, gen_captcha_page_file = Captgen.get_captcha(mode=modal_captcha_page_url)
-    print("modal_captcha_page_url=", modal_captcha_page_url, "gen_captcha_page_file=" , gen_captcha_page_file) 
     if retcode > 0:
         return "<p>An error has occured. Check the log file.</p>"
     response.set_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, proxy-revalidate")
@@ -215,7 +212,6 @@ def send_static_div_page(filename=gen_div_page_file):
         retcode, gen_div_page_file = Captgen.create_captcha(mode=div_page_url)
     else:
         retcode, gen_div_page_file = Captgen.get_captcha(mode=div_page_url)
-    print("div_page_url=",div_page_url, "gen_div_page_file=" , gen_div_page_file) 
     if retcode > 0:
         return "<p>An error has occured. Check the log file.</p>"
     response.set_header("Cache-Control", "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, proxy-revalidate")               

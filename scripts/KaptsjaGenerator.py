@@ -131,6 +131,10 @@ if type(max_retries) != int:
     text = "max_retries %s is not an integer. Change the value." % max_retries
     logging.error(text)
     sys.exit(syserrmsg)
+if type(max_time_to_solve) != int:
+    text = "max_time_to_solve %s is not an integer. Change the value." % max_time_to_solve
+    logging.error(text)
+    sys.exit(syserrmsg)
 if type(circle_color_trans) != int:
     text = "circle_color_trans %s is not an integer. Change the value." % circle_color_trans
     logging.error(text)
@@ -230,7 +234,7 @@ if not type(textzone_center_text) == bool:
     textzone_center_text = True
 if not type(rotate_char_circle) == bool: 
     rotate_char_circle = True
-if not type(rotate_char_circle) == int:
+if not type(rotate_angle_char_circle) == int:
     rotate_angle_char_circle = 30
 if -1 <= int(rotate_angle_char_circle) <= 361 : # when true we skip else
     pass
@@ -551,9 +555,7 @@ class Kaptsja(object):
         # The Encryption function expects a single string input. Therefore the numeric digits in charlist 
         # are first converted into string digits and then joined into a single string 
         self.plainstring = ''.join(map(str, self.charlist))
-        self.encodedstring = cripto.encryption(self.plainstring)
-        self.plainstring
-        return 0
+        return self.plainstring
         
     def get_filelist(self, dir, filter="*"):
         filelist =[]
@@ -1199,8 +1201,8 @@ class Kaptsja(object):
     <!-- Include First the jQuery and Second Bootstrap javascript libraries. Order is important! -->
     <script src="{jquery_js_file}"></script>
     <script src="{bootstrap_js_file}"></script>
-    </body)
-    <html
+    </body>
+    <html>
     '''.format(bootstrap_css_file=bootstrap_css_file, \
         bootstrap_js_file=bootstrap_js_file, \
         jquery_js_file=jquery_js_file, \
@@ -1433,7 +1435,11 @@ def create_captcha(plainstring=None, mode=captcha_page_url):  # defaults to mode
     if mode == modal_page_url:
         c.write_modal_page_file()
         return 0, os.path.normpath(c.gen_modal_page_file)
-    c.set_charlist()
+    c.plainstring = c.set_charlist()
+    if max_captcha_sets > 0:  # the time limit to solve a Kaptsja is NOT used for pre-generated Kaptsja's
+        c.encodedstring = cripto.encryption(c.plainstring)
+    else:                      # the time limit to solve a Kaptsja is ONLY used for dynamically generated Kaptsja's
+        c.encodedstring = cripto.encryption(c.plainstring + "#time:" + str(time.time()) )
     c.create_picturelist()
     c.scale_input_picture()
     c.create_textzone()
@@ -1446,7 +1452,6 @@ def create_captcha(plainstring=None, mode=captcha_page_url):  # defaults to mode
     return 0, os.path.normpath(c.gen_captcha_page_file)
 
 def get_captcha(plainstring=None, mode=captcha_page_url):
-    print (mode)
     try:
         captcha_page_list = []
         infile_name = None
@@ -1470,7 +1475,7 @@ def get_captcha(plainstring=None, mode=captcha_page_url):
      # update the time stamps of the pre-generated files, 
      # before serving it as it will help to force reloads, 
      # however when browser caching time of 1 second is not yet exceeded then user must refresh page again by clicking new picture
-     # Therefore a short dealy of 1.5 seconds is programmed	search for "setTimeout" in KaptsjaGenerator.py  
+     # Therefore a short delay of 1.5 seconds is programmed	search for "setTimeout" in KaptsjaGenerator.py  
      # Try to use this "dirty trick" when there are still caching issues you cannot solve
             #os.utime(os.path.normpath(served_captcha_file))  
             return 0, served_captcha_file
@@ -1483,7 +1488,14 @@ def get_captcha(plainstring=None, mode=captcha_page_url):
         
 
 def checkcaptcha(checkvalue, controlvalue, reverse):
-    decoded_string = cripto.decryption(controlvalue)
+    decoded_string_time = cripto.decryption(controlvalue)
+    if max_captcha_sets > 0:  # the time limit to solve a Kaptsja is NOT used for pre-generated Kaptsja's
+        decoded_string = decoded_string_time
+    else:                     # the time limit to solve a Kaptsja is ONLY used for dynamically generated Kaptsja's
+        decoded_string, dec_time = decoded_string_time.split("#time:")  
+        if float(dec_time) + float(max_time_to_solve) < time.time():  # When Kaptsja's are not solved within the max_time_to_solve a Failure page will be displayed.
+            ## print("Captcha expired")
+            return False  
     logging.info(r"Check Kaptsja: checkvalue    : %s" % checkvalue)
     logging.info(r"Check Kaptsja: decoded_string: %s" % decoded_string)
     verify_checkvalue = ""
@@ -1548,7 +1560,11 @@ if __name__ == '__main__':
         if mode == modal_page_url:
             c.write_modal_page_file()
             print ("gen_modal_page_file", os.path.normpath(c.gen_modal_page_file))
-        c.set_charlist()
+        c.plainstring = c.set_charlist()
+        if max_captcha_sets > 0:  # the time limit to solve a Kaptsja is NOT used for pre-generated Kaptsja's
+            c.encodedstring = cripto.encryption(c.plainstring)
+        else:                      # the time limit to solve a Kaptsja is ONLY used for dynamically generated Kaptsja's
+            c.encodedstring = cripto.encryption(c.plainstring + "#time:" + str(time.time()) )
         c.create_picturelist()
         c.scale_input_picture()
         c.create_textzone()
