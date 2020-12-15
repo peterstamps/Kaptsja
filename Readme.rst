@@ -21,6 +21,7 @@ NOTE 2: Also the configuration file and the source code offer a wealth of docume
 
 10.1.6  Correction of wrong rotation angle test. The value was always set to 30. Now rotation range 0 - 360 is possible as intended.  Bottle debug and reloader set to False, to prevent double generation of HTML pages (no functional change however). How to run on Android has been added.
 
+10.2.0  Added configuration setting "redirect_after_captcha". Setting this to "True" will avoid redirection to success or failure page after submission and Kaptsja verification happened. Only a True or False string will be returned allowing JavaScript to handle the continuation in the HTML page itself (similar to Google's reCaptcha).
 
 **Quick Installation of Kaptsja**
 ---------------------------------
