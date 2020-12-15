@@ -228,6 +228,10 @@ if not 'copyright_text_position' in globals():
     copyright_text_position = "R"
 if copyright_text_position not in  ("R", "L", "r", "l"):
     copyright_text_position = "R"
+if not 'redirect_after_captcha' in globals(): 
+    redirect_after_captcha = True
+if not type(redirect_after_captcha) == bool: 
+    redirect_after_captcha = False
 if not 'textzone_center_text' in globals(): 
     textzone_center_text = True
 if not type(textzone_center_text) == bool: 
@@ -931,12 +935,12 @@ class Kaptsja(object):
         -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
         box-shadow: 0 3px 9px rgba(0,0,0,.5);
         }}
-    `   '''.format(html_header_css=self.html_header_css(), \
+        '''.format(html_header_css=self.html_header_css(), \
             width=self.wpic+2, \
             ) 
         # 2 pixels extra are needed to get good right alignment (generated max picture width is 2 pixels than max widt of modal-content
     def javascript_window_onload_modal(self):
-        return ''' '''
+        return '''$('#checkbox').prop('checked', false); '''
     def html_header_modal(self):
         return '''<div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><h2>{captcha_hdr_close}</h2></button>
@@ -989,10 +993,9 @@ class Kaptsja(object):
             setTimeout(function (){{ 
             // Delay time of 1.5 seconds between clicks on New Picture button will help to delete meanwhile chached Kaptsja's
             }}, 1500); // How long do you want the delay to be (in milliseconds)? 
-        
         // following is required to force browser to reload always the page!
             var tnow = new Date(Date.now());
-			var formatted_stamp = tnow.getHours() + "_" + tnow.getMinutes() + "_" + tnow.getSeconds() + "_" +  Math.random() * 1000;
+            var formatted_stamp = tnow.getHours() + "_" + tnow.getMinutes() + "_" + tnow.getSeconds() + "_" +  Math.random() * 1000;
 
             (e || window.event).preventDefault();
             var con = document.getElementById('content')
@@ -1000,6 +1003,7 @@ class Kaptsja(object):
             xhr.onreadystatechange = function (e) {{ 
                 if (xhr.readyState == 4 && xhr.status == 200) {{
                  con.innerHTML = xhr.responseText;
+                 document.getElementById("checkbox").checked = false;
                 }}
         }}
         xhr.open("GET", "{div_captcha_page_url}?random=" +  formatted_stamp, true);
@@ -1092,6 +1096,54 @@ class Kaptsja(object):
             submitted_text=submitted_text, \
             too_many_clicks_text=too_many_clicks_text, \
             too_many_retries_text=too_many_retries_text ) 
+    def javascript_fsubmit_modal(self):
+        return '''
+        function fsubmit() {{
+            // document.getElementById("myForm").submit();
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{captcheck}"); 
+            xhr.onload=function(event){{
+                if (event.target.response == 'True') {{
+                // alert("The server says: " + event.target.response); 
+                 document.querySelector("#message > span").innerHTML = "{submitted_text}" ;  
+                  $('#checkbox').prop('checked', true);
+                  $('#myModal').modal('hide'); 
+                }}  else{{
+                 document.querySelector("#message > span").innerHTML = "{submitted_text} Incorrect!" ;
+                }}
+            }}; 
+            var formData = new FormData(document.getElementById("myForm")); xhr.send(formData);
+            // by exceeding the maximum values a reload of new picture will be forced (to avoid back page in browser)
+            document.getElementById("count_max_retries").value = {max_retries} + 1;
+            document.getElementById("count_clicks_per_try").value = {max_clicks_per_try} + 1;             
+        }}
+        '''.format(max_retries=max_retries, max_clicks_per_try=number_of_digits+number_of_letters, \
+        submitted_text=submitted_text, captcheck=captcha_check_url) 
+    def javascript_fsubmit_div(self):
+        return '''
+        function fsubmit() {{
+            // document.getElementById("myForm").submit();
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{captcheck}"); 
+            xhr.onload=function(event){{
+                if (event.target.response == 'True') {{
+                // alert("The server says: " + event.target.response); 
+                 document.querySelector("#message > span").innerHTML = "{submitted_text}" ;  
+                 document.getElementById("checkbox").checked = true;
+                 document.getElementById('content').innerHTML = "";
+                }}  else{{
+                 document.getElementById("checkbox").checked = false;
+                 document.querySelector("#message > span").innerHTML = "{submitted_text} Incorrect!" ;
+                }}
+            }}; 
+            var formData = new FormData(document.getElementById("myForm")); xhr.send(formData);
+            // by exceeding the maximum values a reload of new picture will be forced (to avoid back page in browser)
+            document.getElementById("count_max_retries").value = {max_retries} + 1;
+            document.getElementById("count_clicks_per_try").value = {max_clicks_per_try} + 1;             
+        }}
+        '''.format(max_retries=max_retries, max_clicks_per_try=number_of_digits+number_of_letters, \
+        submitted_text=submitted_text, captcheck=captcha_check_url) 
+        
     def javascript_fsubmit_default(self):
         return '''
         function fsubmit() {{
@@ -1110,13 +1162,19 @@ class Kaptsja(object):
             javascript_freload = self.javascript_freload_modal()
             javascript_fretry =self.javascript_fretry_default()
             javascript_fclick =self.javascript_fclick_default()
-            javascript_fsubmit =self.javascript_fsubmit_default()
+            if redirect_after_captcha == True:
+                javascript_fsubmit =self.javascript_fsubmit_default()
+            else:
+                javascript_fsubmit =self.javascript_fsubmit_modal()
         if self.mode in (div_page_url, div_captcha_page_url): 
             javascript_window_onload = self.javascript_window_onload_div()
             javascript_freload = self.javascript_freload_div()
             javascript_fretry =self.javascript_fretry_default()
             javascript_fclick =self.javascript_fclick_default()
-            javascript_fsubmit =self.javascript_fsubmit_default()
+            if redirect_after_captcha == True:
+                javascript_fsubmit =self.javascript_fsubmit_default()
+            else:
+                javascript_fsubmit =self.javascript_fsubmit_div()
         if self.mode == captcha_page_url: 
             javascript_window_onload = self.javascript_window_onload_default()
             javascript_freload = self.javascript_freload_default()
@@ -1172,7 +1230,7 @@ class Kaptsja(object):
     <div> 
         <!-- When not using default settings you might need to adapt href in next line -->
         <a data-toggle="modal" data-target="#myModal" href="{modal_captcha_page_url}">
-            <label>{not_a_robot_text}<input type="checkbox" name="checkbox" value="link"></label>
+            <label>{not_a_robot_text}<input type="checkbox" id="checkbox" name="checkbox" value="link"></label>
         </a>
     </div> 
     </div>     
@@ -1230,13 +1288,18 @@ class Kaptsja(object):
     <div>
     <h1>{intro_captcha_text}<h1>
     </div>
+    <div>
+        <label>{not_a_robot_text}</label>
+        <a href="{div_captcha_page_url}?random={force_reload}"><input type="checkbox" id="checkbox" name="checkbox" onclick="freload();">
+        </a>
+    </div>
     <table>
       <tr><td>
-        <div id="content">
-                <label>{not_a_robot_text}</label>
-                <a href="{div_captcha_page_url}?random={force_reload}"><input type="checkbox" name="checkbox"  onclick="freload();">
-            </a>
-        </div>  
+        </td></tr>
+        <tr><td>        
+         <div id="content">
+            <span></span>
+         </div>
       </td></tr>
     </table>
     </body>

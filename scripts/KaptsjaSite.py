@@ -251,15 +251,17 @@ def verify_captcha():
     controlvalue = request.forms.get('controlvalue')
     reverse = request.forms.get('reverse')
     mode = request.forms.get('mode')
+    retcode = False
     if len(checkvalue) != number_of_letters + number_of_digits:
         redirect(failure_page_url)
     else:
         retcode = Captgen.checkcaptcha(checkvalue, controlvalue, reverse)
-        if retcode == True:
-            redirect(success_page_url)
-        else:
-            redirect(failure_page_url)
-    return static_file(staticFile, filePath)
+        if redirect_after_captcha == True:
+            if retcode == True:
+                redirect(success_page_url)
+            else:
+                redirect(failure_page_url)
+    return str(retcode)
  
  
 # here we redirect to the home page, normally that would be your next logical site page 

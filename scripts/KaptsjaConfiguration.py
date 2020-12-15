@@ -22,6 +22,8 @@ time_keep_captcha_set       = 60          # Value in seconds. Each Kaptsja set i
 #                                         # concurrency collisions. It will be kept there for the seconds defined.
 #                                         # When max_captcha_sets > 0 then the time_keep_captcha_set value is not used and
 #                                         # all generated files in work_dir will be kept
+redirect_after_captcha      = False       # No redirection happens after submission, only True or False
+#                                         # string is returned allowing JavaScript to handle the continuation
 #
 input_picture               = r"Kaptsja_bg.jpg" # Always keep a copy of your input picture as it might be rescaled due to width size or  setting of input_picture_rescale_width 
 input_picture_rescale_width = 0                 # Default 0. Zero means no rescaling else use value between 360 - 598 
@@ -43,10 +45,10 @@ font_pnts_textzone          = 20              # About Font points:
 used_letters    = u"ABCDEFGHJKLMNPRSTUVWXYZ"  # Randomly given number of letters will be shown on Kaptsja. 
 #                                             # Use u" " for Special Unicode Characters like u"個長句子。". NOTE: to display
 #                                             # special characters like Chinese the correct (Chinese) font must be specified!
-number_of_letters           = 2               # Default: 2 A maximum of 10 characters is allowed 
+number_of_letters           = 1               # Default: 2 A maximum of 10 characters is allowed 
 #                                             # (total of number_of_letters + number_of_digits < 11
 used_digits                 = r"0123456789"   # Numbers 6 and 9 will be underscored when rotating is active
-number_of_digits            = 4               # Default 4: Recommended: number_of_letters + number_of_digits is 6
+number_of_digits            = 1               # Default 4: Recommended: number_of_letters + number_of_digits is 6
 #                                             # The number of circles drawn equals to number_of_letters + number_of_digits
 #                                             # An even number 2 is better for precise positioning of area circle on HTML page 
 max_time_to_solve           = 60              # Time in seconds. Default: 60. A dynamically created Kaptsja has a maximum time to solve it hereafter it will expire
@@ -59,7 +61,7 @@ border_line                 = 3               # The thickness for lines in pixel
 line_color                  = "#808080"       # String: default #808080 gray #d93211 orange/red HTML color names with Hex color codes
 rotate_char_circle          = True            # Default: True. Set to False for better performance
 rotate_angle_char_circle    = 75              # Setting: 30. Means between -30 and +30  Max value is 360.
-circle_color_trans          = 15              # Value between 0 and 100. No % sign! Higher number means more transparency. 50 is half.
+circle_color_trans          = 10              # Value between 0 and 100. No % sign! Higher number means more transparency. 50 is half.
 char_circle_color_trans     = 0               # Value between 0 and 100. No % sign! As character color equals  the inversed circle color,
 #                                             # a higher number here has the opposite effect!! 
 #                                             # 100 means the full inversed circle color will be shown on the character: usefull for higher contrast
@@ -75,7 +77,6 @@ copyright_text_picture      =  "© Margrhet"   # Copyright text put at upper rig
 copyright_text_color        = "#f123ab"       # String:  HTML color names with Hex color codes
 copyright_text_position     = "R"             # R/r=right or L/l=Left upper corner of picture. Default R
 font_pnts_copyright_text    = 12              # Using same font as for textzone
-
 #                                                         
 # Please check if the sub-directories do exist under the home_dir Kaptsja, only the key_dir will be automatically created if it doesn't exist
 # Directory settings
@@ -129,8 +130,8 @@ gen_css_file             = work_dir  + gen_css               # Path generated cs
 sitehost = "localhost"                         # hostname or IP address must be between quotes
 siteport = 8080                                # port number must be integer, number below 1000 might require special Admin rights
 siteserver = "wsgiref"                         # Values: Default "wsgiref" , use "python_server" when in production with nginx and uwsgi, or "gevent"
-sitedebug = False                              # Values: True, False. Bottle shows debugging messages in start cmd window when True. Us False in production.
-site_reloader = False                          # Values: True, False. When changes in loaded Python code are detected Bottle will automatically reload it.
+sitedebug = True                              # Values: True, False. Bottle shows debugging messages in start cmd window when True. Us False in production.
+site_reloader = True                          # Values: True, False. When changes in loaded Python code are detected Bottle will automatically reload it.
 #
 # URL to resources or invoking module functions
 # URL parts settings
