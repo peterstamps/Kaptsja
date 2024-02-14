@@ -23,6 +23,16 @@ NOTE 2: Also the configuration file and the source code offer a wealth of docume
 
 10.2.0  Added configuration setting "redirect_after_captcha". Setting this to "True" will avoid redirection to success or failure page after submission and Kaptsja verification happened. Only a True or False string will be returned allowing JavaScript to handle the continuation in the HTML page itself (similar to Google's reCaptcha).
 
+10.3.0  PIL (pillow) was changed after version 9.5.0. Upgraded to PIL 10.2.0 ! That version is now required
+	run: pip uninstall Pillow followed by pip install Pillow. 
+	
+All versions:
+	If you get font errors on Linux please run: sudo apt --reinstall install ttf-mscorefonts-installer
+
+        If you get Beautifulsoup error in a virtual environment you might need to run: pip3 install beautifulsoup4
+	
+	Clearing the browser cache might be required in case False is wrong given!
+
 **Quick Installation of Kaptsja**
 ---------------------------------
 Important: use **--target** or **-t** to specify your desired location 
