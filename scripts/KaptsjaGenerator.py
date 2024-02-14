@@ -503,7 +503,12 @@ class Kaptsja(object):
             
             # When text width is smaller than the max_width (of text zone) no split is needed
             # Text is just added to the list with line list
-            if font.getsize(text)[0]  <= max_width:
+           # (_, _, fw, fh) = font.getbbox(text)
+            (x1, y1, x2, y2) = font.getbbox(text)   
+            fw = x2 - x1
+            fh = y2 - y1         
+            # if font.getsize(text)[0]  <= max_width: # works only in PIL 9.50 and lower getsize() was replaced with getbbox() in higher PIL versions
+            if fw  <= max_width:
                 lines.append(text)
             else:
                 # "\n" in text forces a new line break so split text in multiple lines
@@ -516,7 +521,9 @@ class Kaptsja(object):
                     # append each word to a "display" line as long as it fits (width is shorter than the textzone width)
                     while i < len(words):
                         line = '' # start with empty "display" line
-                        while i < len(words) and font.getsize(line + words[i])[0] <= max_width: 
+                      
+                        
+                        while i < len(words) and font.getlength(line + words[i]) <= max_width: 
                             # check if there are still words to be added and if the width of the line + word to be added still fit in the text zone using the given font size width.
                             line = line + words[i]+ " " # add word to line plus a space
                             i += 1  # update counter
@@ -582,13 +589,17 @@ class Kaptsja(object):
         ##print("self.input_picture=",self.input_picture)
 
     def get_font(self, font_type, font_points, text):
-        fnt = ImageFont.truetype(font_type, font_points)
+        fnt = ImageFont.truetype(font_type, font_points, encoding="unic")
         fw = 0
         fh = 0    
         fw_max = 0 
         fh_max = 0 
         for char in text:
-            fw, fh = fnt.getsize(text = char)
+            #(_, _, fw, fh) = fnt.getbbox(char)
+            (x1, y1, x2, y2) = fnt.getbbox(char)   
+            fw = x2 - x1
+            fh = y2 - y1 
+            # fw, fh = fnt.getsize(text = char) # works with PIL 9.5.0 getsize was removed in PIL 10 and higher
             if fw > fw_max: fw_max = fw
             if fh > fh_max: fh_max = fh
         return fnt, fw_max, fh_max
@@ -652,7 +663,7 @@ class Kaptsja(object):
         self.draw.rectangle((0,text_y_min - border_line, self.wpic, self.hpic - border_line), fill=textzone_fill_color_transparent) #, outline = line_color, width=0)
         # position aligned text line by line 
         for line in lines:
-            line_fnt_width = fnt_for_textzone.getsize(line)[0]
+            line_fnt_width = fnt_for_textzone.getlength(line)
             if textzone_center_text == True:
                 self.draw.text(( text_max_width//2 - line_fnt_width//2   ,y), line, fill=textzone_text_color, font=fnt_for_textzone)
             else:
@@ -671,7 +682,7 @@ class Kaptsja(object):
     def create_copyright_text(self, text):
         # Position the Copyright Text        
         fnt_for_copyright, copyright_text_width, copyright_text_height = self.get_font(font_textzone, font_pnts_copyright_text, text)
-        copyright_text_width = fnt_for_copyright.getsize(copyright_text_picture)[0]
+        copyright_text_width = fnt_for_copyright.getlength(copyright_text_picture)
         if copyright_text_position.lower() == "r":
             self.draw.text((self.wpic - copyright_text_width - 5, 5), copyright_text_picture, fill=copyright_text_color, font=fnt_for_copyright)
         else: # left upper corner
@@ -743,7 +754,11 @@ class Kaptsja(object):
                 # Draw the circle on the image and place character in circle
                 circle_fill_color = self.rcolor()
                 circle_fill_color_transparent = self.hex2rgb_transparent(circle_fill_color, circle_color_trans)
-                fw, fh = self.draw.textsize(text="{0}".format(char),font=fnt_for_circle) 
+                xy = (x,y)
+                (x1, y1, x2, y2) = self.draw.textbbox(xy,text="{0}".format(char),font=fnt_for_circle) 
+                xy = (x1,y1)
+                fw = x2 - x1
+                fh = y2 - y1                 
                 # text_color is the inversed value color of circle_fill_color which is a hexcode color
                 # Below the hexcode color is converted to rgb code and then change to it's inversed value
                 text_color = self.inverse_rgbcolor(self.hex2rgb_transparent( circle_fill_color, char_circle_color_trans))
